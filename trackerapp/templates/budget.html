@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <title>Budget</title>
+    </head>
+    <body>
+        {% for category in categories %}
+        {{ category }} 
+        <form method="POST">
+            <input type="submit" value="Delete" name="delete-category"
+            onclick="return confirm('Delete Category {{ category|capfirst }}? All related expenses will be deleted. This cannot be undone.')"/>
+            <input name="category-id" value="{{ category.id }}" type="hidden">
+        </form>
+        {% if category.total > 0 %}
+        {{ category.total }}
+        <table> 
+            <thead>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Date</th>
+            </thead>
+            {% for expense in expenses %}
+                {% if expense.category == category %}
+                    <tr>
+                        <td>{{ expense.name }}</td>
+                        <td>{{ expense.amount}}</td>
+                        <td>{{ expense.date }} </td>
+                        <td>
+                            <form method="POST">
+                                <input name="expense-id" value="{{ expense.id }}" type="hidden"/>
+                                <input type="submit" value="Edit" name="edit-expense" />
+                                <input type="submit" value="Delete" name="delete-expense" />
+                            </form>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+            <br>
+            <br>
+            {% endif %}
+        {% endfor %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <!-- {% for field in expense_form %}
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                </label> 
+                {{ field }}<br>
+            {% endfor %} -->
+            {{ expense_form }}
+            <input id="edited_expense_id" type="hidden" name="edited_expense_id" value="{{ edited_expense_id }}"/>
+            <input id="expense_form" type="submit" name="expense-submit" value="Submit"/>
+        </form>
+        <form method="POST">
+            {{ category_form }}
+            <input id="category_form" type="submit" name="category-submit" value="Submit"/>
+        </form>
+    </body>
+</html>
